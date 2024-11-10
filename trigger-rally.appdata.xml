@@ -36,4 +36,5 @@
   </releases>
   <url type="homepage">https://trigger-rally.sourceforge.io/</url>
   <content_rating type="oars-1.1"/>
+  <launchable type="desktop-id">io.sourceforge.trigger_rally.TriggerRally.desktop</launchable>
 </component>
