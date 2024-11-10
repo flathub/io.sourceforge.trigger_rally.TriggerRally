@@ -12,7 +12,7 @@
     </p>
   </description>
   <screenshots>
-    <screenshot>
+    <screenshot type="default">
       <image type="source">https://trigger-rally.sourceforge.io/img/trigger_screenshot_3.jpg</image>
     </screenshot>
     <screenshot>
