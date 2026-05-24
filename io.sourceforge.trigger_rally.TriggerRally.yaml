@@ -1,6 +1,6 @@
 app-id: io.sourceforge.trigger_rally.TriggerRally
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: trigger-rally
 rename-icon: trigger-rally
@@ -12,8 +12,15 @@ finish-args:
   - --share=network
   - --device=dri
   - --socket=pulseaudio
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/doc
+  - '*.la'
+  - '*.a'
 
 modules:
+  - shared-modules/SDL2/SDL2_image.json
   - shared-modules/physfs/physfs.json
   - shared-modules/glu/glu-9.json
   - shared-modules/glew/glew.json
@@ -22,21 +29,16 @@ modules:
     buildsystem: meson
     sources:
       - type: git
-        url: 'https://github.com/leethomason/tinyxml2.git'
+        url: https://github.com/leethomason/tinyxml2.git
         tag: 9.0.0
         commit: 1dee28e51f9175a31955b9791c74c430fe13dc82
 
   - name: freealut
     sources:
       - type: git
-        url: 'https://github.com/vancegroup/freealut.git'
+        url: https://github.com/vancegroup/freealut.git
         tag: freealut_1_1_0
         commit: 570dea5b77493cc9ce0b84f6a0a2ee31ed0b2c73
-    cleanup:
-      - /include
-      - /lib/pkgconfig
-      - /lib/*.a
-      - /lib/*.la
 
   - name: trigger-rally
     buildsystem: simple
@@ -44,16 +46,16 @@ modules:
       - make --directory=src prefix=${FLATPAK_DEST} exec_prefix=${FLATPAK_DEST} bindir=${FLATPAK_DEST}/bin
       - make install --directory=src prefix=${FLATPAK_DEST} exec_prefix=${FLATPAK_DEST} bindir=${FLATPAK_DEST}/bin
     post-install:
-      - install -Dm755 ${FLATPAK_DEST}/share/games/trigger-rally/icon/trigger-64.png ${FLATPAK_DEST}/share/icons/hicolor/64x64/apps/trigger-rally.png
-      - install -Dm755 ${FLATPAK_DEST}/share/games/trigger-rally/icon/trigger-128.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/trigger-rally.png
-      - install -Dm755 ${FLATPAK_DEST}/share/games/trigger-rally/icon/trigger-256.png ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/trigger-rally.png
       - install -Dm755 ${FLATPAK_DEST}/share/games/trigger-rally/icon/trigger-rally-icons.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/trigger-rally.svg
-      - install -Dm644 trigger-rally.appdata.xml ${FLATPAK_DEST}/share/appdata/trigger-rally.appdata.xml
-      - install -Dm644 trigger-rally.desktop ${FLATPAK_DEST}/share/applications/trigger-rally.desktop
+      - install -Dm644 trigger-rally.appdata.xml -t ${FLATPAK_DEST}/share/metainfo/
+      - install -Dm644 trigger-rally.desktop -t ${FLATPAK_DEST}/share/applications/
+      - install -Dm644 /app/share/doc/trigger-rally/COPYING.txt -t ${FLATPAK_DEST}/share/licenses/${FLATPAK_ID}/trigger-rally/
     sources:
       - type: archive
         url: https://downloads.sourceforge.net/project/trigger-rally/trigger-0.6.6.1/trigger-rally-0.6.6.1.tar.gz
         sha256: 7f086e13d142b8bb07e808ab9111e5553309c1413532f56c754ce3cfa060cb04
+      - type: patch
+        path: fix-sdl2-detection.patch
       - type: shell
         commands:
           - sed -i 's#-lSDL2main##' src/GNUmakefile*
